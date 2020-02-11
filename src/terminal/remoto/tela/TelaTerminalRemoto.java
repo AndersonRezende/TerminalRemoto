@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import terminal.remoto.emulador.adaptador.Comando;
 import terminal.remoto.emulator.TerminalEmulator;
 
 /**
@@ -515,7 +516,11 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
                 String comandosAntigos = "";
                 while(true)
                 {
-                    String comando = entrada.readUTF();  
+                    String leituraExterna = entrada.readUTF();  
+                    String comando = leituraExterna;
+                    
+                    if(leituraExterna.matches("[0-9]*"))                        //Se receber um int, é um comando fixo
+                        comando = Comando.escolherComandoPorId(Integer.parseInt(comando));
                     
                     Map<String,String> result = TerminalEmulator.exec(comando);
                     String mensagem = cliente.getInetAddress().getHostAddress()+": " + comando;

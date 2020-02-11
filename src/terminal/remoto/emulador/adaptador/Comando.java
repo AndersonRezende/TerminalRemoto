@@ -8,16 +8,18 @@ package terminal.remoto.emulador.adaptador;
  *
  * @author anderson
  */
-public class Comando {
+public class Comando 
+{
     public static final String NOME_SISTEMA = System.getProperty("os.name");
     public static final int DESLIGAR = 1;
-    public static final int CANCELAR_DESLIGAMENTO = Comando.DESLIGAR + 1;
-    public static final int REINICIAR = Comando.CANCELAR_DESLIGAMENTO + 1;
-    public static final int SUSPENDER = Comando.REINICIAR + 1;
-    public static final int BLOQUEAR_TELA = Comando.SUSPENDER + 1;
-    public static final int AUMENTAR_VOLUME = Comando.BLOQUEAR_TELA + 1;
-    public static final int DIMINUIR_VOLUME = Comando.AUMENTAR_VOLUME + 1;
-    public static final int LISTAR_DIRETORIO = Comando.DIMINUIR_VOLUME + 1;
+    public static final int CANCELAR_DESLIGAMENTO = 2;
+    public static final int REINICIAR = 3;
+    public static final int SUSPENDER = 4;
+    public static final int BLOQUEAR_TELA = 5;
+    public static final int AUMENTAR_VOLUME = 6;
+    public static final int DIMINUIR_VOLUME = 7;
+    public static final int LISTAR_DIRETORIO = 8;
+    public static final int CONFIGURACAO_IP = 9;
     
 
     public static String escolherComandoPorId(int id)
@@ -48,6 +50,9 @@ public class Comando {
                 break;
             case Comando.LISTAR_DIRETORIO:
                 comando = Comando.listaDiretorio();
+                break;
+            case Comando.CONFIGURACAO_IP:
+                comando = Comando.configuracaoIp();
                 break;
         }
         return comando;
@@ -142,6 +147,16 @@ public class Comando {
             comando = "ls";
         else
             comando = "dir";
+        return comando;
+    }
+    
+    public static String configuracaoIp()
+    {
+        String comando = "";
+        if(isLinux())
+            comando = "ifconfig";
+        else
+            comando = "ipconfig";
         return comando;
     }
 }
