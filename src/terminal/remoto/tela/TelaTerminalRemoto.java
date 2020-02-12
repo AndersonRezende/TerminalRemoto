@@ -55,8 +55,23 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         autoiniciar = false;
     }
 
-    private TelaTerminalRemoto(int porta) {
+    public TelaTerminalRemoto(int porta) {
         this();
+        jTextFieldPorta.setText(""+porta);
+        jPasswordFieldSenha.setText("");
+        autoiniciar = true;
+        this.senha = "";
+        try 
+        {   this.iniciar(porta);    } 
+        catch (IOException ex) 
+        {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
+    }
+    
+    public TelaTerminalRemoto(int porta, String senha){
+        this();
+        this.senha = senha;
+        jTextFieldPorta.setText(""+porta);
+        jPasswordFieldSenha.setText(senha);
         autoiniciar = true;
         try 
         {   this.iniciar(porta);    } 
@@ -123,6 +138,7 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
 
         jLabel3.setText("Senha:");
 
+        jPasswordFieldSenha.setText("10001");
         jPasswordFieldSenha.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jPasswordFieldSenhaActionPerformed(evt);
@@ -350,8 +366,10 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
 
     private void jButtonIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonIniciarActionPerformed
         this.ip = jTextFieldIp.getText();
+        this.senha = new String(jPasswordFieldSenha.getPassword());
+        this.porta = jTextFieldPorta.getText();
         try 
-        {   this.iniciar(Integer.parseInt(jTextFieldPorta.getText()));  } 
+        {   this.iniciar(Integer.parseInt(porta));  } 
         catch (IOException ex) 
         {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
     }//GEN-LAST:event_jButtonIniciarActionPerformed
@@ -441,10 +459,19 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
             @Override
             public void run() {
                 TelaTerminalRemoto telaTerminalRemoto;
-                if(args.length > 0)
-                     telaTerminalRemoto = new TelaTerminalRemoto(Integer.parseInt(args[0]));
-                else
-                    telaTerminalRemoto = new TelaTerminalRemoto();
+                
+                switch(args.length)
+                {
+                    case 0:
+                        telaTerminalRemoto = new TelaTerminalRemoto();
+                        break;
+                    case 1:
+                        telaTerminalRemoto = new TelaTerminalRemoto(Integer.parseInt(args[0]));
+                        break;
+                    case 2:
+                        telaTerminalRemoto = new TelaTerminalRemoto(Integer.parseInt(args[0]), args[1]);
+                        break;
+                }
             }
         });
     }
@@ -495,9 +522,22 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
                 jLabelEndereco.setText(cliente.getInetAddress().getHostAddress());
                 jLabelMensagens.setText("0");
                 
-                Thread aguardaComando = new Thread(new AguardaComandos());
-                aguardaComando.start();
-                System.out.println("Cliente: "+cliente.getInetAddress().getHostAddress()+" conectado.");
+                String senhaCliente = entrada.readUTF();
+                if(!senha.equals(senhaCliente))
+                {
+                    saida.writeUTF("Senha incorreta, encerrando conexão...");
+                    entrada.close();
+                    saida.close();
+                    cliente.close();
+                    server.close();
+                    reiniciar();
+                }
+                else
+                {
+                    Thread aguardaComando = new Thread(new AguardaComandos());
+                    aguardaComando.start();
+                    System.out.println("Cliente: "+cliente.getInetAddress().getHostAddress()+" conectado.");
+                }
             } 
             catch (IOException ex) 
             {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
