@@ -18,8 +18,12 @@ public class Comando
     public static final int BLOQUEAR_TELA = 5;
     public static final int AUMENTAR_VOLUME = 6;
     public static final int DIMINUIR_VOLUME = 7;
-    public static final int LISTAR_DIRETORIO = 8;
+    public static final int MUDO = 8;
     public static final int CONFIGURACAO_IP = 9;
+    public static final int PWD = 11;
+    public static final int DATE = 12;
+    public static final int HISTORY = 13;
+    public static final int LISTAR_DIRETORIO = 14;
     
 
     public static String escolherComandoPorId(int id)
@@ -48,11 +52,20 @@ public class Comando
             case Comando.DIMINUIR_VOLUME:
                 comando = Comando.diminuirVolume();
                 break;
+            case Comando.MUDO:
+                comando = Comando.mudo();
+                break;
             case Comando.LISTAR_DIRETORIO:
                 comando = Comando.listaDiretorio();
                 break;
             case Comando.CONFIGURACAO_IP:
                 comando = Comando.configuracaoIp();
+                break;
+            case Comando.DATE:
+                comando = Comando.date();
+                break;
+            case Comando.HISTORY:
+                comando = Comando.history();
                 break;
         }
         return comando;
@@ -157,6 +170,33 @@ public class Comando
             comando = "ifconfig";
         else
             comando = "ipconfig";
+        return comando;
+    }
+    
+    public static String mudo()
+    {   return Comando.diminuirVolume(100); }
+    
+    public static String PWD()
+    {
+        String comando = "";
+        if(isLinux())
+            comando = "pwd";
+        return comando;
+    }
+    
+    public static String date()
+    {
+        String comando = "";
+        if(isLinux())
+            comando = "date";
+        return comando;
+    }
+    
+    public static String history()
+    {
+        String comando = "";
+        if(isLinux())
+            comando = "history";
         return comando;
     }
 }
