@@ -61,6 +61,9 @@ public class Comando
             case Comando.CONFIGURACAO_IP:
                 comando = Comando.configuracaoIp();
                 break;
+            case Comando.PWD:
+                comando = Comando.pwd();
+                break;
             case Comando.DATE:
                 comando = Comando.date();
                 break;
@@ -176,7 +179,7 @@ public class Comando
     public static String mudo()
     {   return Comando.diminuirVolume(100); }
     
-    public static String PWD()
+    public static String pwd()
     {
         String comando = "";
         if(isLinux())

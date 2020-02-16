@@ -44,11 +44,8 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
     public TelaTerminalRemoto() {
         initComponents();
         try 
-        {
-            jTextFieldIp.setText(InetAddress.getLocalHost().getHostAddress());
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        {   jTextFieldIp.setText(InetAddress.getLocalHost().getHostAddress());  } 
+        catch (UnknownHostException ex) {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(""+new File("").getAbsoluteFile() + File.separator +"Resources"+ File.separator +"Images"+File.separator+"Terminal.png"));
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
