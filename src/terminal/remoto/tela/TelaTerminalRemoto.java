@@ -96,6 +96,7 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jPasswordFieldSenha = new javax.swing.JPasswordField();
         jButtonIniciar = new javax.swing.JButton();
+        jButtonParar = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabelStatus = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
@@ -152,6 +153,14 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
             }
         });
 
+        jButtonParar.setText("Parar");
+        jButtonParar.setEnabled(false);
+        jButtonParar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonPararActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -169,7 +178,9 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPasswordFieldSenha, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 131, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButtonParar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonIniciar)
                 .addContainerGap())
         );
@@ -184,7 +195,8 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
                     .addComponent(jTextFieldPorta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
                     .addComponent(jPasswordFieldSenha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonIniciar))
+                    .addComponent(jButtonIniciar)
+                    .addComponent(jButtonParar))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -392,6 +404,13 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
     }//GEN-LAST:event_jTextFieldEnviarActionPerformed
 
+    private void jButtonPararActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPararActionPerformed
+        try 
+        {   this.parar();   } 
+        catch (IOException ex) 
+        {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
+    }//GEN-LAST:event_jButtonPararActionPerformed
+
     
     public void iniciar() throws IOException
     {
@@ -403,26 +422,36 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         Thread aguardaConexao = new Thread(new AguardaConexao());
         aguardaConexao.start();
         jButtonIniciar.setEnabled(false);
+        jButtonParar.setEnabled(true);
         jButtonEnviar.setEnabled(true);
         jLabelStatus.setText("Ligado");
     }
     
-    public void reiniciar()
+    public void reiniciar() throws IOException
+    {
+        parar();
+        if(autoiniciar)
+            iniciar();
+    }
+    
+    public void parar() throws IOException
     {
         jButtonIniciar.setEnabled(true);
+        jButtonParar.setEnabled(false);
         jLabelStatus.setText("Desligado");
         jLabelEndereco.setText("Sem dados");
         jLabelMensagens.setText("Sem dados");
         jLabelNome.setText("Sem dados");
         jTextPaneComandos.setText("");
         
-        if(autoiniciar)
-        {
-            try 
-            {   this.iniciar();  } 
-            catch (IOException ex) 
-            {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
-        }
+        if(entrada != null)
+            entrada.close();
+        if(saida != null)
+            saida.close();
+        if(cliente != null)
+            cliente.close();
+        if(server != null)
+            server.close();
     }
     
     public void enviar() throws IOException
@@ -434,9 +463,8 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         }
     }
     
-    /**
-     * @param args the command line arguments
-     */
+    
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -487,6 +515,7 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
     private javax.swing.JButton jButtonAtualizar;
     private javax.swing.JButton jButtonEnviar;
     private javax.swing.JButton jButtonIniciar;
+    private javax.swing.JButton jButtonParar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -533,10 +562,6 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
                 if(!senha.equals(senhaCliente))
                 {
                     saida.writeUTF("Senha incorreta, encerrando conexão...");
-                    entrada.close();
-                    saida.close();
-                    cliente.close();
-                    server.close();
                     reiniciar();
                 }
                 else
@@ -547,7 +572,7 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
                 }
             } 
             catch (IOException ex) 
-            {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
+            {   System.err.println("O servidor foi interrompido!");   }
         }
     }
     
@@ -600,15 +625,9 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
             finally
             {
                 try 
-                {
-                    entrada.close();
-                    saida.close();
-                    server.close();
-                    cliente.close();
-                } 
+                {   reiniciar();    } 
                 catch (IOException ex) 
                 {    Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);  }
-                reiniciar();
             }
         }
         
