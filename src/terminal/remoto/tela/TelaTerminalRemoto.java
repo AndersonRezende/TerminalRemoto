@@ -62,7 +62,7 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         autoiniciar = true;
         this.senha = "";
         try 
-        {   this.iniciar(porta);    } 
+        {   this.iniciar();    } 
         catch (IOException ex) 
         {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
     }
@@ -74,7 +74,7 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         jPasswordFieldSenha.setText(senha);
         autoiniciar = true;
         try 
-        {   this.iniciar(porta);    } 
+        {   this.iniciar();    } 
         catch (IOException ex) 
         {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
     }
@@ -138,7 +138,7 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
 
         jLabel3.setText("Senha:");
 
-        jPasswordFieldSenha.setText("10001");
+        jPasswordFieldSenha.setText("123");
         jPasswordFieldSenha.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jPasswordFieldSenhaActionPerformed(evt);
@@ -357,19 +357,22 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldIpActionPerformed
 
     private void jTextFieldPortaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldPortaActionPerformed
-        // TODO add your handling code here:
+        try 
+        {   this.iniciar();  } 
+        catch (IOException ex) 
+        {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
     }//GEN-LAST:event_jTextFieldPortaActionPerformed
 
     private void jPasswordFieldSenhaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordFieldSenhaActionPerformed
-        // TODO add your handling code here:
+        try 
+        {   this.iniciar();  } 
+        catch (IOException ex) 
+        {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
     }//GEN-LAST:event_jPasswordFieldSenhaActionPerformed
 
     private void jButtonIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonIniciarActionPerformed
-        this.ip = jTextFieldIp.getText();
-        this.senha = new String(jPasswordFieldSenha.getPassword());
-        this.porta = jTextFieldPorta.getText();
         try 
-        {   this.iniciar(Integer.parseInt(porta));  } 
+        {   this.iniciar();  } 
         catch (IOException ex) 
         {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
     }//GEN-LAST:event_jButtonIniciarActionPerformed
@@ -390,9 +393,13 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldEnviarActionPerformed
 
     
-    public void iniciar(int porta) throws IOException
+    public void iniciar() throws IOException
     {
-        server = new ServerSocket(porta);
+        this.ip = jTextFieldIp.getText();
+        this.senha = new String(jPasswordFieldSenha.getPassword());
+        this.porta = jTextFieldPorta.getText();
+        
+        server = new ServerSocket(Integer.parseInt(this.porta));
         Thread aguardaConexao = new Thread(new AguardaConexao());
         aguardaConexao.start();
         jButtonIniciar.setEnabled(false);
@@ -412,7 +419,7 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         if(autoiniciar)
         {
             try 
-            {   this.iniciar(Integer.parseInt(jTextFieldPorta.getText()));  } 
+            {   this.iniciar();  } 
             catch (IOException ex) 
             {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
         }
