@@ -409,7 +409,7 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonPararActionPerformed
 
     
-    public void iniciar() throws IOException
+    private void iniciar() throws IOException
     {
         this.ip = jTextFieldIp.getText();
         this.senha = new String(jPasswordFieldSenha.getPassword());
@@ -424,14 +424,14 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         jLabelStatus.setText("Ligado");
     }
     
-    public void reiniciar() throws IOException
+    private void reiniciar() throws IOException
     {
         parar();
         if(autoiniciar)
             iniciar();
     }
     
-    public void parar() throws IOException
+    private void parar() throws IOException
     {
         jButtonIniciar.setEnabled(true);
         jButtonParar.setEnabled(false);
@@ -451,7 +451,7 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
             server.close();
     }
     
-    public void enviar() throws IOException
+    private void enviar() throws IOException
     {
         if(cliente != null && cliente.isConnected())
         {   
