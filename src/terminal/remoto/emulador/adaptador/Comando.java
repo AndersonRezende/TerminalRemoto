@@ -10,6 +10,8 @@ package terminal.remoto.emulador.adaptador;
  */
 public class Comando 
 {
+    public static final String COMANDO = "comando-";
+    public static final String SYSTEM = "system-";
     public static final String NOME_SISTEMA = System.getProperty("os.name");
     public static final int DESLIGAR = 1;
     public static final int CANCELAR_DESLIGAMENTO = 2;
@@ -74,6 +76,29 @@ public class Comando
         return comando;
     }
     
+    public static boolean isComandoTerminal(String comando)
+    {
+        boolean comandoTerminal = false;
+        if(comando.contains(Comando.COMANDO))
+            comandoTerminal = true;
+        return comandoTerminal;
+    }
+    
+    public static boolean isComandoSystem(String comando)
+    {
+        boolean comandoSystem = false;
+        if(comando.contains(Comando.SYSTEM))
+            comandoSystem = true;
+        return comandoSystem;
+    }
+    
+    public static String executaComandoSystem(String comando)
+    {
+        comando = comando.replace(Comando.SYSTEM, "");
+        String resultado = System.getProperty(comando);
+        return resultado;
+    }
+    
     public static boolean isLinux()
     {
         boolean isLinux = false;
@@ -94,7 +119,7 @@ public class Comando
         if(isLinux())
             comando += "shutdown -h";
         else
-            comando += "shutdown //s";
+            comando += "shutdown /s";
         return comando;
     }
     
@@ -104,7 +129,7 @@ public class Comando
         if(isLinux())
             comando += "shutdown -c";
         else
-            comando += "shutdown //a";
+            comando += "shutdown /a";
         return comando;
     }
     
@@ -114,7 +139,7 @@ public class Comando
         if(isLinux())
             comando = "shutdown -r";
         else
-            comando = "shutdown //r";
+            comando = "shutdown /r";
         return comando;
     }
     
