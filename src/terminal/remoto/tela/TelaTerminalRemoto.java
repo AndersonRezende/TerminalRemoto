@@ -32,6 +32,7 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
     private String ip;
     private String porta;
     private String senha;
+    private String caminhoImagem;
     private int mensagens = 0;
     private ServerSocket server;
     private Socket cliente;
@@ -42,36 +43,43 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
      * Creates new form TelaTerminalRemoto
      */
     public TelaTerminalRemoto() {
-        initComponents();
-        try 
-        {   jTextFieldIp.setText(InetAddress.getLocalHost().getHostAddress());  } 
-        catch (UnknownHostException ex) {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
-        this.setIconImage(Toolkit.getDefaultToolkit().getImage(""+new File("").getAbsoluteFile() + File.separator +"Resources"+ File.separator +"Images"+File.separator+"Terminal.png"));
+        this(9999, "", false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setVisible(true);
-        autoiniciar = false;
     }
 
     public TelaTerminalRemoto(int porta) {
-        this();
-        jTextFieldPorta.setText(""+porta);
-        jPasswordFieldSenha.setText("");
-        autoiniciar = true;
-        this.senha = "";
-        try 
-        {   this.iniciar();    } 
-        catch (IOException ex) 
-        {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
+        this(porta, "", true);
     }
     
     public TelaTerminalRemoto(int porta, String senha){
-        this();
+        this(porta, senha, true);
+        this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+    }
+    
+    public TelaTerminalRemoto(int porta, String senha, boolean autoiniciar)
+    {
+        initComponents();
+        this.autoiniciar = autoiniciar;
         this.senha = senha;
-        jTextFieldPorta.setText(""+porta);
-        jPasswordFieldSenha.setText(senha);
-        autoiniciar = true;
+        this.porta = "" + porta;
         try 
-        {   this.iniciar();    } 
+        {   this.ip = InetAddress.getLocalHost().getHostAddress();  } 
+        catch (UnknownHostException ex) 
+        {   System.err.println("Não foi possível identificar o ip");   }
+        
+        jTextFieldIp.setText(this.ip);
+        jTextFieldPorta.setText(this.porta);
+        jPasswordFieldSenha.setText(this.senha);
+        
+        this.caminhoImagem = "" + new File("").getAbsoluteFile() + File.separator + "Resources" + File.separator + "Images" + File.separator + "Terminal.png";
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage(caminhoImagem));
+        this.setVisible(true);
+        
+        try 
+        {   
+            if(this.autoiniciar)
+                this.iniciar();    
+        } 
         catch (IOException ex) 
         {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
     }
