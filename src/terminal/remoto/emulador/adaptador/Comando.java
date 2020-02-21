@@ -33,43 +33,43 @@ public class Comando
         String comando = "";
         switch(id)
         {
-            case Comando.DESLIGAR:
+            case DESLIGAR:
                 comando = Comando.desligar();
                 break;
-            case Comando.CANCELAR_DESLIGAMENTO:
+            case CANCELAR_DESLIGAMENTO:
                 comando = Comando.cancelarDesligamento();
                 break;
-            case Comando.REINICIAR:
+            case REINICIAR:
                 comando = Comando.reiniciar();
                 break;
-            case Comando.SUSPENDER:
+            case SUSPENDER:
                 comando = Comando.suspender();
                 break;
-            case Comando.BLOQUEAR_TELA:
+            case BLOQUEAR_TELA:
                 comando = Comando.bloquearTela();
                 break;
-            case Comando.AUMENTAR_VOLUME:
+            case AUMENTAR_VOLUME:
                 comando = Comando.aumentarVolume();
                 break;
-            case Comando.DIMINUIR_VOLUME:
+            case DIMINUIR_VOLUME:
                 comando = Comando.diminuirVolume();
                 break;
-            case Comando.MUDO:
+            case MUDO:
                 comando = Comando.mudo();
                 break;
-            case Comando.LISTAR_DIRETORIO:
+            case LISTAR_DIRETORIO:
                 comando = Comando.listaDiretorio();
                 break;
-            case Comando.CONFIGURACAO_IP:
+            case CONFIGURACAO_IP:
                 comando = Comando.configuracaoIp();
                 break;
-            case Comando.PWD:
+            case PWD:
                 comando = Comando.pwd();
                 break;
-            case Comando.DATE:
+            case DATE:
                 comando = Comando.date();
                 break;
-            case Comando.HISTORY:
+            case HISTORY:
                 comando = Comando.history();
                 break;
         }
@@ -117,9 +117,9 @@ public class Comando
     {
         String comando = "";
         if(isLinux())
-            comando += "shutdown -h";
+            comando += "shutdown -h now";
         else
-            comando += "shutdown /s";
+            comando += "shutdown /s /t 0";
         return comando;
     }
     

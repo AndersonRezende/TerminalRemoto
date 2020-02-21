@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import terminal.remoto.emulador.adaptador.Comando;
 import terminal.remoto.emulator.TerminalEmulator;
 
@@ -411,9 +412,18 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
 
     private void jButtonPararActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPararActionPerformed
         try 
-        {   this.parar();   } 
+        {   
+            String senha = JOptionPane.showInputDialog(jPanel1, "Informe a senha parar finalizar o servidor:", "Finalizar o servidor", JOptionPane.INFORMATION_MESSAGE);
+            if(senha != null)
+            {
+                if(senha.equals(this.senha))
+                    this.parar();   
+                else
+                    JOptionPane.showMessageDialog(jPanel1, "Senha incorreta.", "Erro ao finalizar a execução", JOptionPane.ERROR_MESSAGE);
+            }
+        } 
         catch (IOException ex) 
-        {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
+        {   System.err.println("Não foi possível finalizar a execução do servidor.");   }
     }//GEN-LAST:event_jButtonPararActionPerformed
 
     
