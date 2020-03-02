@@ -5,11 +5,10 @@
  */
 package terminal.remoto.tela;
 
-import java.awt.Toolkit;
+import assets.GerenciadorAssets;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -18,6 +17,7 @@ import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import terminal.remoto.emulador.adaptador.Comando;
@@ -33,7 +33,6 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
     private String ip;
     private String porta;
     private String senha;
-    private String caminhoImagem;
     private int mensagens = 0;
     private ServerSocket server;
     private Socket cliente;
@@ -72,8 +71,8 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         jTextFieldPorta.setText(this.porta);
         jPasswordFieldSenha.setText(this.senha);
         
-        this.caminhoImagem = "" + new File("").getAbsoluteFile() + File.separator + "Resources" + File.separator + "Images" + File.separator + "Terminal.png";
-        this.setIconImage(Toolkit.getDefaultToolkit().getImage(caminhoImagem));
+        ImageIcon iconeJanela = new ImageIcon(GerenciadorAssets.getImagemUrl(GerenciadorAssets.TERMINAL));
+        this.setIconImage(iconeJanela.getImage());
         this.setVisible(true);
         
         try 
