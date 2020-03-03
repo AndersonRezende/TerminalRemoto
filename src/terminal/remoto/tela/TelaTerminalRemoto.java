@@ -8,7 +8,6 @@ package terminal.remoto.tela;
 import assets.GerenciadorAssets;
 import java.awt.AWTException;
 import java.awt.Image;
-import java.awt.Menu;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
@@ -30,14 +29,15 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import terminal.remoto.emulador.adaptador.Comando;
+import terminal.remoto.emulator.RobotEmulator;
 import terminal.remoto.emulator.TerminalEmulator;
 
 /**
  *
  * @author anderson
  */
-public class TelaTerminalRemoto extends javax.swing.JFrame {
-
+public class TelaTerminalRemoto extends javax.swing.JFrame 
+{
     private boolean autoiniciar;
     private String ip;
     private String porta;
@@ -52,20 +52,14 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
     /**
      * Creates new form TelaTerminalRemoto
      */
-    public TelaTerminalRemoto() {
-        this(9999, "", false);
-        //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    }
+    public TelaTerminalRemoto() 
+    {   this(9999, "", false);  }
 
-    public TelaTerminalRemoto(int porta) {
-        this(porta, "", true);
-    }
+    public TelaTerminalRemoto(int porta) 
+    {   this(porta, "", true);  }
     
-    public TelaTerminalRemoto(int porta, String senha){
-        this(porta, senha, true);
-        this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    }
+    public TelaTerminalRemoto(int porta, String senha)
+    {   this(porta, senha, true);   }
     
     public TelaTerminalRemoto(int porta, String senha, boolean autoiniciar)
     {
@@ -85,6 +79,7 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         iconeJanela = new ImageIcon(GerenciadorAssets.getImagemUrl(GerenciadorAssets.TERMINAL));
         this.setIconImage(iconeJanela.getImage());
         this.setVisible(false);
+        this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         
         if (SystemTray.isSupported()) 
         {   configurarSystemTray(); } 
