@@ -6,6 +6,15 @@
 package terminal.remoto.tela;
 
 import assets.GerenciadorAssets;
+import java.awt.AWTException;
+import java.awt.Image;
+import java.awt.Menu;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -38,13 +47,15 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
     private Socket cliente;
     private DataInputStream entrada;
     private DataOutputStream saida;
+    private ImageIcon iconeJanela;
     
     /**
      * Creates new form TelaTerminalRemoto
      */
     public TelaTerminalRemoto() {
         this(9999, "", false);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     }
 
     public TelaTerminalRemoto(int porta) {
@@ -71,9 +82,14 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         jTextFieldPorta.setText(this.porta);
         jPasswordFieldSenha.setText(this.senha);
         
-        ImageIcon iconeJanela = new ImageIcon(GerenciadorAssets.getImagemUrl(GerenciadorAssets.TERMINAL));
+        iconeJanela = new ImageIcon(GerenciadorAssets.getImagemUrl(GerenciadorAssets.TERMINAL));
         this.setIconImage(iconeJanela.getImage());
-        this.setVisible(true);
+        this.setVisible(false);
+        
+        if (SystemTray.isSupported()) 
+        {   configurarSystemTray(); } 
+        else 
+        {   System.err.println("Tray indisponível");    }
         
         try 
         {   
@@ -82,6 +98,55 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         } 
         catch (IOException ex) 
         {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
+    }
+    
+    
+    private void configurarSystemTray()
+    {
+        String texto = "Servidor desligado.";
+        if(autoiniciar)
+            texto = "Servidor inicializado";
+        
+        tray = SystemTray.getSystemTray();
+        Image image = iconeJanela.getImage();
+        popupTray = new PopupMenu();
+        menuItemIniciarTray = new MenuItem("Iniciar");
+        menuItemIniciarTray.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {   menuItemIniciarTrayActionPerformed(e);  }
+        });
+        menuItemPararTray = new MenuItem("Parar");
+        menuItemPararTray.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {   menuItemPararTrayActionPerformed(e);  }
+        });
+        menuItemExibirOcultarTray = new MenuItem("Exibir/Ocultar");
+        menuItemExibirOcultarTray.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {   menuItemExibirOcultarTrayActionPerformed(e);  }
+        });
+        menuItemSairTray = new MenuItem("Sair");
+        menuItemSairTray.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {   menuItemSairTrayActionPerformed(e);  }
+        });
+        menuItemPararTray.setEnabled(false);
+        
+        popupTray.add(menuItemIniciarTray);
+        popupTray.add(menuItemPararTray);
+        popupTray.add(menuItemExibirOcultarTray);
+        popupTray.add(menuItemSairTray);
+        
+        trayIcon = new TrayIcon(image, texto, popupTray);
+        trayIcon.setImageAutoSize(true);
+        try 
+        {   tray.add(trayIcon);   } 
+        catch (AWTException e) 
+        {   System.err.println("Não pode adicionar a tray");    }
     }
 
     /**
@@ -425,7 +490,69 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         {   System.err.println("Não foi possível finalizar a execução do servidor.");   }
     }//GEN-LAST:event_jButtonPararActionPerformed
 
+    private void menuItemIniciarTrayActionPerformed(java.awt.event.ActionEvent evt)
+    {   
+        try 
+        {   this.iniciar();  } 
+        catch (IOException ex) 
+        {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   } 
+    }
     
+    private void menuItemPararTrayActionPerformed(java.awt.event.ActionEvent evt)
+    {   
+        try 
+        {   
+            String senha = JOptionPane.showInputDialog(null, "Informe a senha parar finalizar o servidor:", "Finalizar o servidor", JOptionPane.INFORMATION_MESSAGE);
+            if(senha != null)
+            {
+                if(senha.equals(this.senha))
+                    this.parar();   
+                else
+                    JOptionPane.showMessageDialog(null, "Senha incorreta.", "Erro ao finalizar a execução", JOptionPane.ERROR_MESSAGE);
+            }
+        } 
+        catch (IOException ex) 
+        {   System.err.println("Não foi possível finalizar a execução do servidor.");   }
+    }
+    
+    private void menuItemSairTrayActionPerformed(java.awt.event.ActionEvent evt)
+    {   
+        if(this.senha != "")
+        {
+            try 
+            {   
+                String senha = JOptionPane.showInputDialog(null, "Informe a senha parar finalizar o servidor:", "Finalizar o servidor", JOptionPane.INFORMATION_MESSAGE);
+                if(senha != null)
+                {
+                    if(senha.equals(this.senha))
+                    {
+                        this.parar();
+                        System.exit(0);
+                    }
+                    else
+                        JOptionPane.showMessageDialog(null, "Senha incorreta.", "Erro ao finalizar a execução", JOptionPane.ERROR_MESSAGE);
+                }
+            } 
+            catch (IOException ex) 
+            {   System.err.println("Não foi possível finalizar a execução do servidor.");   }
+        }
+        else
+        {
+            try 
+            {   this.parar();   } 
+            catch (IOException ex) 
+            {   Logger.getLogger(TelaTerminalRemoto.class.getName()).log(Level.SEVERE, null, ex);   }
+            System.exit(0);
+        }
+            
+    }
+    
+    private void menuItemExibirOcultarTrayActionPerformed(java.awt.event.ActionEvent evt)
+    {   this.setVisible(!this.isVisible()); }
+    
+    
+    
+    //---------------------------MÉTODOS AUXILIARES-----------------------------
     private void iniciar() throws IOException
     {
         this.ip = jTextFieldIp.getText();
@@ -439,6 +566,10 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         jButtonParar.setEnabled(true);
         jButtonEnviar.setEnabled(true);
         jLabelStatus.setText("Ligado");
+        trayIcon.setToolTip("Servidor ligado");
+        
+        menuItemIniciarTray.setEnabled(false);
+        menuItemPararTray.setEnabled(true);
     }
     
     private void reiniciar() throws IOException
@@ -457,6 +588,10 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         jLabelMensagens.setText("Sem dados");
         jLabelNome.setText("Sem dados");
         jTextPaneComandos.setText("");
+        trayIcon.setToolTip("Servidor parado");
+        
+        menuItemIniciarTray.setEnabled(true);
+        menuItemPararTray.setEnabled(false);
         
         if(entrada != null)
             entrada.close();
@@ -477,6 +612,13 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
         }
     }
     
+    private boolean estadoServidor()
+    {
+        boolean ligado = false;
+        if(server != null)
+            ligado = true;
+        return ligado;
+    }
     
     
     public static void main(String args[]) {
@@ -552,8 +694,15 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
     private javax.swing.JTextField jTextFieldPorta;
     private javax.swing.JTextPane jTextPaneComandos;
     // End of variables declaration//GEN-END:variables
+    private SystemTray tray;
+    private TrayIcon trayIcon;
+    private PopupMenu popupTray;
+    private MenuItem menuItemExibirOcultarTray;
+    private MenuItem menuItemIniciarTray;
+    private MenuItem menuItemPararTray;
+    private MenuItem menuItemSairTray;
 
-
+    
     class AguardaConexao implements Runnable
     {
         @Override
@@ -602,7 +751,7 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
                 String comandosAntigos = "";
                 while(true)
                 {
-                    String leituraExterna = entrada.readUTF();  
+                    String leituraExterna = entrada.readUTF();
                     String comando = leituraExterna;
                     String mensagem = cliente.getInetAddress().getHostAddress()+": " + comando;
                     
@@ -634,7 +783,7 @@ public class TelaTerminalRemoto extends javax.swing.JFrame {
                             jTextFieldEnviar.setText(result.get("input"));
                             mensagem += "\n" + result.get("input");
                         }
-                    } 
+                    }
                     
                     enviar();
                     comandosAntigos += transformarComandoParaHTML(mensagem);
