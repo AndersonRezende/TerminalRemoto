@@ -7,6 +7,7 @@ package terminal.remoto.emulator;
 
 import java.awt.AWTException;
 import java.awt.Robot;
+import terminal.remoto.emulador.adaptador.Comando;
 
 /**
  *
@@ -24,16 +25,20 @@ public class RobotEmulator
         this.mouseY = 0;
     }
     
+    public String executarComando(String comando)
+    {
+        comando = comando.replace(Comando.ROBOT, "");
+        String partes[] = comando.split(" ");
+        if(partes[0].equalsIgnoreCase("mover"))
+            this.mover(Integer.parseInt(partes[1]), Integer.parseInt(partes[2]));
+        System.out.println(partes[0]);
+        return "Movido com sucesso.";
+    }
+    
     public void mover(int x, int y)
     {
         this.mouseX = x;
         this.mouseY = y;
         robot.mouseMove(mouseX, mouseY);
-    }
-    
-    public static void atalho() throws AWTException
-    {
-        Robot robo = new Robot();
-        robo.mouseMove(1920, 1080);
     }
 }

@@ -22,7 +22,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -30,7 +29,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import terminal.remoto.emulador.adaptador.Comando;
 import terminal.remoto.emulator.RobotEmulator;
-import terminal.remoto.emulator.TerminalEmulator;
 
 /**
  *
@@ -48,6 +46,7 @@ public class TelaTerminalRemoto extends javax.swing.JFrame
     private DataInputStream entrada;
     private DataOutputStream saida;
     private ImageIcon iconeJanela;
+    private RobotEmulator robotEmulator;
     
     /**
      * Creates new form TelaTerminalRemoto
@@ -68,9 +67,15 @@ public class TelaTerminalRemoto extends javax.swing.JFrame
         this.senha = senha;
         this.porta = "" + porta;
         try 
-        {   this.ip = InetAddress.getLocalHost().getHostAddress();  } 
+        {   
+            this.ip = InetAddress.getLocalHost().getHostAddress();  
+            this.robotEmulator = new RobotEmulator();
+        } 
         catch (UnknownHostException ex) 
-        {   System.err.println("Não foi possível identificar o ip");   }
+        {   System.err.println("Não foi possível identificar o ip");   } 
+        catch (AWTException ex) {
+            System.err.println("Não foi possível inicializar o robot.");
+        }
         
         jTextFieldIp.setText(this.ip);
         jTextFieldPorta.setText(this.porta);
@@ -553,6 +558,7 @@ public class TelaTerminalRemoto extends javax.swing.JFrame
         this.ip = jTextFieldIp.getText();
         this.senha = new String(jPasswordFieldSenha.getPassword());
         this.porta = jTextFieldPorta.getText();
+        this.mensagens = 0;
         
         server = new ServerSocket(Integer.parseInt(this.porta));
         Thread aguardaConexao = new Thread(new AguardaConexao());
@@ -709,21 +715,20 @@ public class TelaTerminalRemoto extends javax.swing.JFrame
                 entrada = new DataInputStream(cliente.getInputStream());
                 saida = new DataOutputStream(cliente.getOutputStream());
                 saida.flush();
-                saida.writeUTF("Conectado");
-                
-                jLabelStatus.setText("Conectado");
-                jLabelNome.setText(cliente.getInetAddress().getHostName());
-                jLabelEndereco.setText(cliente.getInetAddress().getHostAddress());
-                jLabelMensagens.setText("0");
                 
                 String senhaCliente = entrada.readUTF();
                 if(!senha.equals(senhaCliente))
                 {
-                    saida.writeUTF("Senha incorreta, encerrando conexão...");
+                    saida.writeInt(1);
                     reiniciar();
                 }
                 else
                 {
+                    jLabelStatus.setText("Conectado");
+                    jLabelNome.setText(cliente.getInetAddress().getHostName());
+                    jLabelEndereco.setText(cliente.getInetAddress().getHostAddress());
+                    jLabelMensagens.setText("0");
+                    saida.writeInt(0);
                     Thread aguardaComando = new Thread(new AguardaComandos());
                     aguardaComando.start();
                     System.out.println("Cliente: "+cliente.getInetAddress().getHostAddress()+" conectado.");
@@ -750,7 +755,11 @@ public class TelaTerminalRemoto extends javax.swing.JFrame
                     String comando = leituraExterna;
                     String mensagem = cliente.getInetAddress().getHostAddress()+": " + comando;
                     
-                    comando = Comando.executarComando(comando);
+                    if(!Comando.isComandoRobot(comando))
+                        comando = Comando.executarComando(comando);
+                    else
+                        comando = robotEmulator.executarComando(comando);
+                    
                     mensagem += "\n" + comando;
                     jTextFieldEnviar.setText(comando);
                     
