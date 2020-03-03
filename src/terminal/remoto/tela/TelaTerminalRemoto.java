@@ -750,35 +750,9 @@ public class TelaTerminalRemoto extends javax.swing.JFrame
                     String comando = leituraExterna;
                     String mensagem = cliente.getInetAddress().getHostAddress()+": " + comando;
                     
-                    if(Comando.isComandoSystem(comando))
-                    {
-                        comando = Comando.executaComandoSystem(comando);
-                        mensagem += "\n" + comando;
-                        jTextFieldEnviar.setText(comando);
-                    }
-                    else
-                    {
-                        if(leituraExterna.matches("[0-9]*"))
-                        {
-                            comando = Comando.escolherComandoPorId(Integer.parseInt(comando));
-                        }
-                        else if(Comando.isComandoTerminal(comando))
-                        {
-                            comando = comando.replace(Comando.COMANDO, "");
-                        }
-                        
-                        Map<String,String> result = TerminalEmulator.exec(comando);
-                        if (result.get("error") != null && !result.get("error").equals(""))
-                        {
-                            jTextFieldEnviar.setText(result.get("error"));
-                            mensagem += "\n" + result.get("error");
-                        }
-                        else if (result.get("input") != null && !result.get("input").equals(""))
-                        {
-                            jTextFieldEnviar.setText(result.get("input"));
-                            mensagem += "\n" + result.get("input");
-                        }
-                    }
+                    comando = Comando.executarComando(comando);
+                    mensagem += "\n" + comando;
+                    jTextFieldEnviar.setText(comando);
                     
                     enviar();
                     comandosAntigos += transformarComandoParaHTML(mensagem);
