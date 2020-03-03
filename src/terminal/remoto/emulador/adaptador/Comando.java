@@ -4,14 +4,24 @@
  */
 package terminal.remoto.emulador.adaptador;
 
+import java.util.Map;
+import terminal.remoto.emulator.TerminalEmulator;
+
 /**
  *
  * @author anderson
  */
 public class Comando 
 {
+    public static final int COMANDO_SISTEMA = 0;
+    public static final int COMANDO_TERMINAL = 1;
+    public static final int COMANDO_ROBOT = 2;
+    public static final int COMANDO_PREDEFINIDO = 3;
+    //
     public static final String COMANDO = "comando-";
-    public static final String SYSTEM = "system-";
+    public static final String SISTEMA = "system-";
+    public static final String ROBOT = "robot-";
+    //
     public static final String NOME_SISTEMA = System.getProperty("os.name");
     public static final int DESLIGAR = 1;
     public static final int CANCELAR_DESLIGAMENTO = 2;
@@ -26,8 +36,100 @@ public class Comando
     public static final int DATE = 12;
     public static final int HISTORY = 13;
     public static final int LISTAR_DIRETORIO = 14;
-    
 
+
+    public static String executarComando(String comando)
+    {
+        String resultado = "";
+        switch(checarTipoComando(comando))
+        {
+            case COMANDO_SISTEMA:
+                resultado = executaComandoSistema(comando);
+                break;
+            case COMANDO_TERMINAL:
+                resultado = executaComandoTerminal(comando);
+                break;
+            case COMANDO_ROBOT:
+                break;
+            case COMANDO_PREDEFINIDO:
+                resultado = escolherComandoPorId(Integer.parseInt(comando));
+                break;
+        }
+        return resultado;
+    }
+    
+    public static int checarTipoComando(String comando)
+    {
+        int tipoComando = -1;
+        
+        if(isComandoPredefinido(comando))
+            tipoComando = COMANDO_PREDEFINIDO;
+        else
+            if(isComandoTerminal(comando))
+                tipoComando = COMANDO_TERMINAL;
+            else
+                if(isComandoSistema(comando))
+                    tipoComando = COMANDO_SISTEMA;
+                else
+                    if(isComandoRobot(comando))
+                        tipoComando = COMANDO_ROBOT;
+        
+        return tipoComando;
+    }
+    
+    public static boolean isComandoTerminal(String comando)
+    {
+        boolean comandoTerminal = false;
+        if(comando.contains(COMANDO))
+            comandoTerminal = true;
+        return comandoTerminal;
+    }
+    
+    public static boolean isComandoSistema(String comando)
+    {
+        boolean comandoSistema = false;
+        if(comando.contains(SISTEMA))
+            comandoSistema = true;
+        return comandoSistema;
+    }
+    
+    public static boolean isComandoRobot(String comando)
+    {
+        boolean comandoRobot = false;
+        if(comando.contains(ROBOT))
+            comandoRobot = true;
+        return comandoRobot;
+    }
+    
+    public static boolean isComandoPredefinido(String comando)
+    {
+        boolean comandoPredefinido = false;
+        if(comando.matches("[0-9]*"))
+            comandoPredefinido = true;
+        return comandoPredefinido;
+    }
+    
+    public static String executaComandoSistema(String comando)
+    {
+        comando = comando.replace(Comando.SISTEMA, "");
+        String resultado = System.getProperty(comando);
+        return resultado;
+    }
+    
+    public static String executaComandoTerminal(String comando)
+    {
+        String resultado = "";
+        if(comando.contains(COMANDO))
+            comando = comando.replace(Comando.COMANDO, "");
+        Map<String,String> result = TerminalEmulator.exec(comando);
+        if (result.get("error") != null && !result.get("error").equals(""))
+        {   resultado = result.get("error");    }
+        else if (result.get("input") != null && !result.get("input").equals(""))
+        {   resultado = result.get("input");    }
+        
+        return resultado;
+    } 
+    
     public static String escolherComandoPorId(int id)
     {
         String comando = "";
@@ -73,30 +175,8 @@ public class Comando
                 comando = Comando.history();
                 break;
         }
+        comando = executaComandoTerminal(comando);
         return comando;
-    }
-    
-    public static boolean isComandoTerminal(String comando)
-    {
-        boolean comandoTerminal = false;
-        if(comando.contains(Comando.COMANDO))
-            comandoTerminal = true;
-        return comandoTerminal;
-    }
-    
-    public static boolean isComandoSystem(String comando)
-    {
-        boolean comandoSystem = false;
-        if(comando.contains(Comando.SYSTEM))
-            comandoSystem = true;
-        return comandoSystem;
-    }
-    
-    public static String executaComandoSystem(String comando)
-    {
-        comando = comando.replace(Comando.SYSTEM, "");
-        String resultado = System.getProperty(comando);
-        return resultado;
     }
     
     public static boolean isLinux()
