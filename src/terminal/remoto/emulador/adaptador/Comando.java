@@ -4,6 +4,8 @@
  */
 package terminal.remoto.emulador.adaptador;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.util.Map;
 import terminal.remoto.emulator.TerminalEmulator;
 
@@ -17,10 +19,12 @@ public class Comando
     public static final int COMANDO_TERMINAL = 1;
     public static final int COMANDO_ROBOT = 2;
     public static final int COMANDO_PREDEFINIDO = 3;
+    public static final int COMANDO_INFO = 4;
     //
     public static final String COMANDO = "comando-";
     public static final String SISTEMA = "system-";
     public static final String ROBOT = "robot-";
+    public static final String INFO = "info-";
     //
     public static final String NOME_SISTEMA = System.getProperty("os.name");
     public static final int DESLIGAR = 1;
@@ -54,6 +58,9 @@ public class Comando
             case COMANDO_PREDEFINIDO:
                 resultado = escolherComandoPorId(Integer.parseInt(comando));
                 break;
+            case COMANDO_INFO:
+                resultado = executaComandoInfo(comando);
+                break;
         }
         return resultado;
     }
@@ -73,6 +80,10 @@ public class Comando
                 else
                     if(isComandoRobot(comando))
                         tipoComando = COMANDO_ROBOT;
+                    else
+                        if(isComandoInfo(comando))
+                            tipoComando = COMANDO_INFO;
+                        
         
         return tipoComando;
     }
@@ -107,6 +118,14 @@ public class Comando
         if(comando.matches("[0-9]*"))
             comandoPredefinido = true;
         return comandoPredefinido;
+    }
+    
+    public static boolean isComandoInfo(String comando)
+    {
+        boolean comandoInfo = false;
+        if(comando.contains(INFO))
+            comandoInfo = true;
+        return comandoInfo;
     }
     
     public static String executaComandoSistema(String comando)
@@ -177,6 +196,27 @@ public class Comando
         }
         comando = executaComandoTerminal(comando);
         return comando;
+    }
+    
+    public static String executaComandoInfo(String comando)
+    {
+        String resultado = "";
+        if(comando.contains(INFO))
+        {
+            Toolkit toolKit = Toolkit.getDefaultToolkit();
+            Dimension dimensao = toolKit.getScreenSize();
+            resultado = informacoesSistema();
+        }
+        return resultado;
+    }
+    
+    public static String informacoesSistema()
+    {
+        
+        Toolkit toolKit = Toolkit.getDefaultToolkit();
+        Dimension dimensao = toolKit.getScreenSize();
+        String resultado = "info-altura-"+dimensao.getHeight()+ ";largura-" + dimensao.getWidth();
+        return resultado;
     }
     
     public static boolean isLinux()
