@@ -228,9 +228,9 @@ public class Comando
     {
         String comando = "";
         if(isLinux())
-            comando += "shutdown -h now";
+            comando = "shutdown -h now";
         else
-            comando += "shutdown /s /t 0";
+            comando = "shutdown /s /t 0";
         return comando;
     }
     
@@ -238,9 +238,9 @@ public class Comando
     {
         String comando = "";
         if(isLinux())
-            comando += "shutdown -c";
+            comando = "shutdown -c";
         else
-            comando += "shutdown /a";
+            comando = "shutdown /a";
         return comando;
     }
     
