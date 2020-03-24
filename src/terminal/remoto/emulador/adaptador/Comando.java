@@ -4,9 +4,13 @@
  */
 package terminal.remoto.emulador.adaptador;
 
+import java.awt.AWTException;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import terminal.remoto.emulator.RobotEmulator;
 import terminal.remoto.emulator.TerminalEmulator;
 
 /**
@@ -205,17 +209,8 @@ public class Comando
         {
             Toolkit toolKit = Toolkit.getDefaultToolkit();
             Dimension dimensao = toolKit.getScreenSize();
-            resultado = informacoesSistema();
+            resultado = "info-altura-"+dimensao.getHeight()+ ";largura-" + dimensao.getWidth();
         }
-        return resultado;
-    }
-    
-    public static String informacoesSistema()
-    {
-        
-        Toolkit toolKit = Toolkit.getDefaultToolkit();
-        Dimension dimensao = toolKit.getScreenSize();
-        String resultado = "info-altura-"+dimensao.getHeight()+ ";largura-" + dimensao.getWidth();
         return resultado;
     }
     
@@ -268,6 +263,8 @@ public class Comando
         String comando = "";
         if(isLinux())
             comando = "systemctl suspend";
+        else
+            comando = "rundll32.exe PowrProf.dll,SetSuspendState";
         return comando;
     }
     
@@ -276,6 +273,8 @@ public class Comando
         String comando = "";
         if(isLinux())
             comando = "cinnamon-screensaver-command -l";
+        else
+            comando = "Rundll32.exe User32.dll,LockWorkStation";
         return comando;
     }
     
